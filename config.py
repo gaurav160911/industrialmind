@@ -11,12 +11,12 @@ class Settings(BaseSettings):
     APP_VERSION: str = "0.1.0"
     DEBUG: bool = False
 
-    CORS_ORIGINS: list[str] = ["*"]
+    CORS_ORIGINS: list[str] = ["*"]  # Override in prod: CORS_ORIGINS=["https://your-app.vercel.app"]
 
     # Groq (free tier) — get your key at https://console.groq.com
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"  # free & powerful
-    CLAUDE_MAX_TOKENS: int = 4096  # kept for compatibility
+    CLAUDE_MAX_TOKENS: int = 1024  # Reduced for faster responses (was 4096)
 
     NEO4J_URI: str = "bolt://localhost:7687"
     NEO4J_USER: str = "neo4j"

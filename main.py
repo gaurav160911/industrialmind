@@ -15,6 +15,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import get_settings
 from routes import ingest, query, graph, compliance, rca
 from services.neo4j_client import close_driver
+from services.embedder import _get_embeddings, _get_chroma_client
+from services.claude_client import _get_client as _get_groq_client
 
 # ── Logging ──────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -29,6 +31,15 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("🚀  IndustrialMind starting up …")
+    # Pre-warm embedding model and clients so first request is fast
+    logger.info("⏳  Pre-warming embedding model (all-MiniLM-L6-v2) …")
+    _get_embeddings()
+    _get_chroma_client()
+    try:
+        _get_groq_client()
+    except RuntimeError:
+        logger.warning("GROQ_API_KEY not set — skipping Groq pre-warm")
+    logger.info("✅  All services warmed up and ready")
     yield
     # Cleanup
     close_driver()
