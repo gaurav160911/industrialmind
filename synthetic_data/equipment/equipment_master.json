@@ -1,0 +1,14 @@
+[
+  {"tag": "P-101A", "name": "Crude Feed Pump A", "type": "Centrifugal Pump", "area": "CDU", "oem": "Flowserve", "install_year": 2014, "criticality": "critical", "condition_grade": "B"},
+  {"tag": "P-101B", "name": "Crude Feed Pump B", "type": "Centrifugal Pump", "area": "CDU", "oem": "Flowserve", "install_year": 2014, "criticality": "critical", "condition_grade": "A"},
+  {"tag": "E-201", "name": "Crude Preheat Exchanger", "type": "Shell & Tube Heat Exchanger", "area": "CDU", "oem": "Alfa Laval", "install_year": 2011, "criticality": "high", "condition_grade": "C"},
+  {"tag": "V-301", "name": "Atmospheric Distillation Column", "type": "Distillation Column", "area": "CDU", "oem": "L&T", "install_year": 2010, "criticality": "critical", "condition_grade": "B"},
+  {"tag": "C-401", "name": "Reformer Feed Compressor", "type": "Reciprocating Compressor", "area": "NHT", "oem": "Dresser-Rand", "install_year": 2013, "criticality": "critical", "condition_grade": "B"},
+  {"tag": "FV-501", "name": "Fuel Gas Control Valve", "type": "Control Valve", "area": "FGS", "oem": "Fisher", "install_year": 2016, "criticality": "high", "condition_grade": "A"},
+  {"tag": "T-601", "name": "Naphtha Storage Tank", "type": "Fixed Roof Tank", "area": "TF", "oem": "IOCL Fabrication", "install_year": 2009, "criticality": "high", "condition_grade": "C"},
+  {"tag": "PSV-701", "name": "HP Separator Relief Valve", "type": "Pressure Safety Valve", "area": "VBU", "oem": "Crosby", "install_year": 2018, "criticality": "critical", "condition_grade": "A"},
+  {"tag": "FI-801", "name": "Flare Ignition System", "type": "Flare System", "area": "FLR", "oem": "John Zink", "install_year": 2012, "criticality": "critical", "condition_grade": "B"},
+  {"tag": "MOV-901", "name": "Feed Isolation MOV", "type": "Motor Operated Valve", "area": "CDU", "oem": "Rotork", "install_year": 2017, "criticality": "high", "condition_grade": "A"},
+  {"tag": "K-1001", "name": "Air Blower", "type": "Centrifugal Blower", "area": "CRU", "oem": "BHEL", "install_year": 2015, "criticality": "medium", "condition_grade": "B"},
+  {"tag": "HE-1101", "name": "Amine Cooler", "type": "Air-Cooled Heat Exchanger", "area": "AGRU", "oem": "GEA", "install_year": 2016, "criticality": "medium", "condition_grade": "A"}
+]

@@ -1,0 +1,54 @@
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+htmlcov/
+.pytest_cache/
+*.pyo
+
+# Virtual environments
+venv/
+venv311/
+.venv/
+env/
+ENV/
+
+# ── Environment / Secrets ─────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ── Node / Frontend ───────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.oxlintrc.json
+
+# ── Docker volumes / data ─────────────────────────────────────────────────
+neo4j_data/
+neo4j_logs/
+chroma_data/
+uploads/
+
+# ── IDE / OS ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ─────────────────────────────────────────────────────────────────
+*.log
+logs/

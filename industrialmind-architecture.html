@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IndustrialMind — Architecture | ET AI Hackathon 2026</title>
+  <meta name="description" content="Architecture diagram for IndustrialMind, an AI-powered Industrial Knowledge Intelligence platform built for ET AI Hackathon 2026 by Bharat Petrochemicals Ltd." />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f172a;
+      font-family: 'Inter', sans-serif;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 48px;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+      position: relative;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: -20px -60px;
+      background: radial-gradient(ellipse at center, rgba(56,189,248,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(99,102,241,0.15));
+      border: 1px solid rgba(56,189,248,0.3);
+      border-radius: 100px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #7dd3fc;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .badge .dot { width:6px; height:6px; background:#38bdf8; border-radius:50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+
+    h1 {
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #f1f5f9 0%, #38bdf8 50%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Diagram wrapper ── */
+    .diagram-wrap {
+      width: 100%;
+      max-width: 1280px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+      overflow-x: auto;
+    }
+
+    /* ── Layer labels ── */
+    .layer-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      fill: #475569;
+    }
+
+    /* ── SVG base ── */
+    svg { display: block; margin: 0 auto; overflow: visible; }
+
+    /* ── Box styles ── */
+    .box-data    { fill: #1e293b; stroke: #475569; stroke-width: 1.5; }
+    .box-pipe    { fill: rgba(234,88,12,0.12); stroke: #ea580c; stroke-width: 1.5; }
+    .box-chroma  { fill: rgba(6,182,212,0.1);  stroke: #06b6d4; stroke-width: 2; }
+    .box-neo4j   { fill: rgba(147,51,234,0.1); stroke: #9333ea; stroke-width: 2; }
+    .box-agent   { fill: rgba(37,99,235,0.12); stroke: #2563eb; stroke-width: 1.5; }
+    .box-llm     { fill: rgba(22,163,74,0.12); stroke: #16a34a; stroke-width: 2; }
+    .box-front   { fill: rgba(13,148,136,0.12);stroke: #0d9488; stroke-width: 1.5; }
+
+    /* text colors */
+    .t-data   { fill: #94a3b8; }
+    .t-pipe   { fill: #fb923c; }
+    .t-chroma { fill: #22d3ee; }
+    .t-neo4j  { fill: #c084fc; }
+    .t-agent  { fill: #60a5fa; }
+    .t-llm    { fill: #4ade80; }
+    .t-front  { fill: #2dd4bf; }
+
+    /* Arrow animation */
+    @keyframes dash {
+      to { stroke-dashoffset: -20; }
+    }
+    .flow-arrow {
+      stroke-dasharray: 6 4;
+      animation: dash 1.6s linear infinite;
+      fill: none;
+    }
+    .arr-pipe  { stroke: #ea580c; stroke-width: 1.8; }
+    .arr-chroma{ stroke: #06b6d4; stroke-width: 1.8; }
+    .arr-neo4j { stroke: #9333ea; stroke-width: 1.8; }
+    .arr-agent { stroke: #3b82f6; stroke-width: 1.6; }
+    .arr-llm   { stroke: #22c55e; stroke-width: 1.8; }
+    .arr-front { stroke: #14b8a6; stroke-width: 1.8; }
+    .arr-data  { stroke: #64748b; stroke-width: 1.5; }
+
+    /* solid arrow */
+    .solid-arrow { fill: none; stroke-width: 2; }
+
+    /* glow */
+    .glow-cyan   { filter: drop-shadow(0 0 8px rgba(6,182,212,0.5)); }
+    .glow-purple { filter: drop-shadow(0 0 8px rgba(147,51,234,0.5)); }
+    .glow-green  { filter: drop-shadow(0 0 10px rgba(22,163,74,0.6)); }
+    .glow-blue   { filter: drop-shadow(0 0 6px rgba(59,130,246,0.4)); }
+    .glow-teal   { filter: drop-shadow(0 0 6px rgba(20,184,166,0.4)); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge"><span class="dot"></span> Architecture Diagram</div>
+  <h1>IndustrialMind — Architecture</h1>
+  <p class="subtitle">Bharat Petrochemicals Ltd., Vadodara Unit-2 &nbsp;|&nbsp; ET AI Hackathon 2026</p>
+</div>
+
+<div class="diagram-wrap">
+<svg id="arch" viewBox="0 0 1200 1020" width="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Arrowhead markers -->
+    <marker id="arr-pipe"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ea580c"/></marker>
+    <marker id="arr-chroma" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#06b6d4"/></marker>
+    <marker id="arr-neo4j"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#9333ea"/></marker>
+    <marker id="arr-agent"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#3b82f6"/></marker>
+    <marker id="arr-llm"    markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#22c55e"/></marker>
+    <marker id="arr-front"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#14b8a6"/></marker>
+    <marker id="arr-data"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#64748b"/></marker>
+    <marker id="arr-orange-rev" markerWidth="8" markerHeight="8" refX="2" refY="3" orient="auto"><path d="M8,0 L8,6 L0,3 z" fill="#ea580c"/></marker>
+
+    <!-- Grid pattern for visual depth -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="1"/>
+    </pattern>
+
+    <!-- Gradients for layer bands -->
+    <linearGradient id="grad-data"   x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(71,85,105,0.0)"/><stop offset="50%" stop-color="rgba(71,85,105,0.07)"/><stop offset="100%" stop-color="rgba(71,85,105,0.0)"/></linearGradient>
+    <linearGradient id="grad-pipe"   x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(234,88,12,0.0)"/><stop offset="50%" stop-color="rgba(234,88,12,0.06)"/><stop offset="100%" stop-color="rgba(234,88,12,0.0)"/></linearGradient>
+    <linearGradient id="grad-store"  x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(6,182,212,0.03)"/><stop offset="50%" stop-color="rgba(99,51,200,0.06)"/><stop offset="100%" stop-color="rgba(147,51,234,0.03)"/></linearGradient>
+    <linearGradient id="grad-agent"  x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(37,99,235,0.0)"/><stop offset="50%" stop-color="rgba(37,99,235,0.06)"/><stop offset="100%" stop-color="rgba(37,99,235,0.0)"/></linearGradient>
+    <linearGradient id="grad-llm"    x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(22,163,74,0.0)"/><stop offset="50%" stop-color="rgba(22,163,74,0.07)"/><stop offset="100%" stop-color="rgba(22,163,74,0.0)"/></linearGradient>
+    <linearGradient id="grad-front"  x1="0" x2="1" y1="0" y2="0"><stop offset="0%" stop-color="rgba(13,148,136,0.0)"/><stop offset="50%" stop-color="rgba(13,148,136,0.07)"/><stop offset="100%" stop-color="rgba(13,148,136,0.0)"/></linearGradient>
+  </defs>
+
+  <!-- Background grid -->
+  <rect width="1200" height="1020" fill="url(#grid)"/>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER BAND BACKGROUNDS
+  ══════════════════════════════════════════════════ -->
+  <rect x="20" y="30"  width="1160" height="110" rx="12" fill="url(#grad-data)"  stroke="rgba(71,85,105,0.2)"  stroke-width="1"/>
+  <rect x="20" y="175" width="1160" height="120" rx="12" fill="url(#grad-pipe)"  stroke="rgba(234,88,12,0.15)" stroke-width="1"/>
+  <rect x="20" y="330" width="1160" height="160" rx="12" fill="url(#grad-store)" stroke="rgba(99,102,241,0.15)" stroke-width="1"/>
+  <rect x="20" y="525" width="1160" height="110" rx="12" fill="url(#grad-agent)" stroke="rgba(37,99,235,0.15)"  stroke-width="1"/>
+  <rect x="20" y="670" width="1160" height="100" rx="12" fill="url(#grad-llm)"   stroke="rgba(22,163,74,0.15)"  stroke-width="1"/>
+  <rect x="20" y="805" width="1160" height="185" rx="12" fill="url(#grad-front)" stroke="rgba(13,148,136,0.15)" stroke-width="1"/>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER LABELS
+  ══════════════════════════════════════════════════ -->
+  <text x="36" y="52"  class="layer-label" fill="#475569">Layer 1 — Data Sources</text>
+  <text x="36" y="196" class="layer-label" fill="#7c3aed" opacity="0.8">Layer 2 — Ingestion Pipeline</text>
+  <text x="36" y="352" class="layer-label" fill="#0e7490" opacity="0.9">Layer 3 — Storage</text>
+  <text x="36" y="546" class="layer-label" fill="#1d4ed8" opacity="0.9">Layer 4 — Backend Agents (FastAPI)</text>
+  <text x="36" y="692" class="layer-label" fill="#166534" opacity="0.9">Layer 5 — LLM Layer</text>
+  <text x="36" y="826" class="layer-label" fill="#0f766e" opacity="0.9">Layer 6 — Frontend</text>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER 1: DATA SOURCES  (y=58..128)
+  ══════════════════════════════════════════════════ -->
+  <!-- 7 boxes, centered, w=148 each, gap=10, total=7*148+6*10=1096+60=1096 → start x=52 -->
+  <!-- Actually: 7*148 + 6*8 = 1036+48 = 1084, cx = (1200-1084)/2 = 58 -->
+
+  <!-- Box helper: rx=8 -->
+  <!-- OISD PDFs: x=58 -->
+  <rect x="58"  y="58" width="143" height="66" rx="8" class="box-data"/>
+  <text x="129.5" y="84"  text-anchor="middle" font-size="12" font-weight="600" class="t-data">📄 OISD PDFs</text>
+  <text x="129.5" y="102" text-anchor="middle" font-size="10" fill="#64748b">Standards &amp; Regulations</text>
+  <text x="129.5" y="117" text-anchor="middle" font-size="9"  fill="#475569" font-family="'JetBrains Mono'">PDF</text>
+
+  <!-- Maintenance WOs: x=210 -->
+  <rect x="210" y="58" width="143" height="66" rx="8" class="box-data"/>
+  <text x="281.5" y="82"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">🔧 Maintenance</text>
+  <text x="281.5" y="97"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">Work Orders</text>
+  <text x="281.5" y="114" text-anchor="middle" font-size="9"  fill="#475569" font-family="'JetBrains Mono'">CSV / SAP</text>
+
+  <!-- Inspection Reports: x=362 -->
+  <rect x="362" y="58" width="143" height="66" rx="8" class="box-data"/>
+  <text x="433.5" y="84"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">🔍 Inspection</text>
+  <text x="433.5" y="99"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">Reports</text>
+  <text x="433.5" y="115" text-anchor="middle" font-size="9"  fill="#475569" font-family="'JetBrains Mono'">PDF / XLSX</text>
+
+  <!-- Incident RCAs: x=514 -->
+  <rect x="514" y="58" width="143" height="66" rx="8" class="box-data"/>
+  <text x="585.5" y="84"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">⚠️ Incident</text>
+  <text x="585.5" y="99"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">RCAs</text>
+  <text x="585.5" y="115" text-anchor="middle" font-size="9"  fill="#475569" font-family="'JetBrains Mono'">Word / PDF</text>
+
+  <!-- Shift Logs: x=666 -->
+  <rect x="666" y="58" width="143" height="66" rx="8" class="box-data"/>
+  <text x="737.5" y="84"  text-anchor="middle" font-size="12" font-weight="600" class="t-data">📋 Shift Logs</text>
+  <text x="737.5" y="100" text-anchor="middle" font-size="10" fill="#64748b">Operator Records</text>
+  <text x="737.5" y="116" text-anchor="middle" font-size="9"  fill="#475569" font-family="'JetBrains Mono'">TXT / XLSX</text>
+
+  <!-- SOPs: x=818 -->
+  <rect x="818" y="58" width="143" height="66" rx="8" class="box-data"/>
+  <text x="889.5" y="84"  text-anchor="middle" font-size="12" font-weight="600" class="t-data">📑 SOPs</text>
+  <text x="889.5" y="100" text-anchor="middle" font-size="10" fill="#64748b">Procedures</text>
+  <text x="889.5" y="116" text-anchor="middle" font-size="9"  fill="#475569" font-family="'JetBrains Mono'">PDF</text>
+
+  <!-- Equipment Master: x=970 -->
+  <rect x="970" y="58" width="170" height="66" rx="8" class="box-data"/>
+  <text x="1055" y="82"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">🏭 Equipment</text>
+  <text x="1055" y="97"  text-anchor="middle" font-size="11" font-weight="600" class="t-data">Master</text>
+  <text x="1055" y="113" text-anchor="middle" font-size="9"  fill="#475569" font-family="'JetBrains Mono'">DB / ERP</text>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER 2: INGESTION PIPELINE  (y=183..273)
+  ══════════════════════════════════════════════════ -->
+  <!-- Pipeline step 1: pdfplumber x=60 -->
+  <rect x="60"  y="183" width="190" height="82" rx="8" class="box-pipe"/>
+  <text x="155"  y="207" text-anchor="middle" font-size="11" font-weight="700" class="t-pipe">📥 pdfplumber</text>
+  <text x="155"  y="224" text-anchor="middle" font-size="10" fill="#94a3b8">PDF Extract</text>
+  <text x="155"  y="244" text-anchor="middle" font-size="9"  fill="#78350f" font-family="'JetBrains Mono'">raw_text, tables</text>
+  <text x="155"  y="257" text-anchor="middle" font-size="9"  fill="#78350f" font-family="'JetBrains Mono'">page_metadata</text>
+
+  <!-- Arrow step1→step2 -->
+  <path d="M250,224 L315,224" class="flow-arrow arr-pipe" marker-end="url(#arr-pipe)"/>
+  <text x="282" y="218" text-anchor="middle" font-size="8" fill="#7c3a0a">text</text>
+
+  <!-- Pipeline step 2: LangChain Splitter x=315 -->
+  <rect x="315" y="183" width="210" height="82" rx="8" class="box-pipe"/>
+  <text x="420"  y="207" text-anchor="middle" font-size="11" font-weight="700" class="t-pipe">✂️ LangChain Splitter</text>
+  <text x="420"  y="224" text-anchor="middle" font-size="10" fill="#94a3b8">Chunking</text>
+  <text x="420"  y="244" text-anchor="middle" font-size="9"  fill="#78350f" font-family="'JetBrains Mono'">chunk_size=512</text>
+  <text x="420"  y="257" text-anchor="middle" font-size="9"  fill="#78350f" font-family="'JetBrains Mono'">overlap=64</text>
+
+  <!-- Arrow step2→step3 -->
+  <path d="M525,224 L590,224" class="flow-arrow arr-pipe" marker-end="url(#arr-pipe)"/>
+  <text x="557" y="218" text-anchor="middle" font-size="8" fill="#7c3a0a">chunks</text>
+
+  <!-- Pipeline step 3: Embedding x=590 -->
+  <rect x="590" y="183" width="240" height="82" rx="8" class="box-pipe"/>
+  <text x="710"  y="205" text-anchor="middle" font-size="11" font-weight="700" class="t-pipe">🧠 all-MiniLM-L6-v2</text>
+  <text x="710"  y="221" text-anchor="middle" font-size="10" fill="#94a3b8">Embedding</text>
+  <text x="710"  y="241" text-anchor="middle" font-size="9"  fill="#78350f" font-family="'JetBrains Mono'">dim=384</text>
+  <text x="710"  y="255" text-anchor="middle" font-size="9"  fill="#78350f" font-family="'JetBrains Mono'">sentence-transformers</text>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER 3: STORAGE — arrows from embedding
+  ══════════════════════════════════════════════════ -->
+  <!-- Left arrow: embedding → ChromaDB -->
+  <path d="M650,265 L400,330" class="flow-arrow arr-chroma" marker-end="url(#arr-chroma)"/>
+  <text x="498" y="288" text-anchor="middle" font-size="8" fill="#0891b2" transform="rotate(-22,498,288)">vectors</text>
+
+  <!-- Right arrow: embedding → Neo4j -->
+  <path d="M760,265 L860,330" class="flow-arrow arr-neo4j" marker-end="url(#arr-neo4j)"/>
+  <text x="838" y="288" text-anchor="middle" font-size="8" fill="#7e22ce" transform="rotate(22,838,288)">entities</text>
+
+  <!-- Also arrow from pipeline area to Neo4j for structured data -->
+  <path d="M1055,124 L1055,338" class="flow-arrow arr-data" marker-end="url(#arr-data)" stroke-dasharray="4 4"/>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER 3: STORAGE (y=340..460)
+  ══════════════════════════════════════════════════ -->
+  <!-- ChromaDB left: x=60 w=480 -->
+  <rect x="60"  y="340" width="480" height="140" rx="10" class="box-chroma glow-cyan"/>
+  <!-- ChromaDB header -->
+  <text x="300" y="368" text-anchor="middle" font-size="14" font-weight="800" class="t-chroma">🗄️ ChromaDB</text>
+  <text x="300" y="386" text-anchor="middle" font-size="10" fill="#67e8f9">Vector Store</text>
+  <!-- inner detail boxes -->
+  <rect x="76"  y="396" width="130" height="36" rx="6" fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.25)" stroke-width="1"/>
+  <text x="141" y="411" text-anchor="middle" font-size="9" fill="#a5f3fc" font-family="'JetBrains Mono'">collection:</text>
+  <text x="141" y="425" text-anchor="middle" font-size="9" fill="#67e8f9" font-family="'JetBrains Mono'">industrial_docs</text>
+
+  <rect x="220" y="396" width="130" height="36" rx="6" fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.25)" stroke-width="1"/>
+  <text x="285" y="411" text-anchor="middle" font-size="9" fill="#a5f3fc" font-family="'JetBrains Mono'">dim: 384</text>
+  <text x="285" y="425" text-anchor="middle" font-size="9" fill="#67e8f9" font-family="'JetBrains Mono'">HNSW index</text>
+
+  <rect x="364" y="396" width="160" height="36" rx="6" fill="rgba(6,182,212,0.08)" stroke="rgba(6,182,212,0.25)" stroke-width="1"/>
+  <text x="444" y="411" text-anchor="middle" font-size="9" fill="#a5f3fc" font-family="'JetBrains Mono'">metadata filter:</text>
+  <text x="444" y="425" text-anchor="middle" font-size="9" fill="#67e8f9" font-family="'JetBrains Mono'">doc_type, date</text>
+
+  <text x="300" y="460" text-anchor="middle" font-size="9" fill="#475569" font-family="'JetBrains Mono'">Persistent · Local · cosine similarity</text>
+
+  <!-- Neo4j right: x=660 w=480 -->
+  <rect x="660" y="340" width="500" height="140" rx="10" class="box-neo4j glow-purple"/>
+  <text x="910" y="368" text-anchor="middle" font-size="14" font-weight="800" class="t-neo4j">🕸️ Neo4j</text>
+  <text x="910" y="386" text-anchor="middle" font-size="10" fill="#d8b4fe">Knowledge Graph</text>
+  <!-- relationship examples -->
+  <rect x="676" y="396" width="230" height="36" rx="6" fill="rgba(147,51,234,0.08)" stroke="rgba(147,51,234,0.25)" stroke-width="1"/>
+  <text x="791" y="412" text-anchor="middle" font-size="9" fill="#e9d5ff" font-family="'JetBrains Mono'">(Equipment)-[HAD_FAILURE]</text>
+  <text x="791" y="426" text-anchor="middle" font-size="9" fill="#c084fc" font-family="'JetBrains Mono'">->(FailureEvent)</text>
+
+  <rect x="918" y="396" width="226" height="36" rx="6" fill="rgba(147,51,234,0.08)" stroke="rgba(147,51,234,0.25)" stroke-width="1"/>
+  <text x="1031" y="412" text-anchor="middle" font-size="9" fill="#e9d5ff" font-family="'JetBrains Mono'">(Incident)-[INVOLVES]</text>
+  <text x="1031" y="426" text-anchor="middle" font-size="9" fill="#c084fc" font-family="'JetBrains Mono'">->(Equipment)</text>
+
+  <text x="910" y="460" text-anchor="middle" font-size="9" fill="#475569" font-family="'JetBrains Mono'">Bolt://localhost:7687 · Cypher · Graph traversal</text>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER 4: BACKEND AGENTS (y=535..615)
+  ══════════════════════════════════════════════════ -->
+  <!-- 5 agents equally spaced: w=190 gap=15, total=5*190+4*15=950+60=1010, start=(1200-1010)/2=95 -->
+
+  <!-- Arrows from ChromaDB to agents -->
+  <path d="M300,480 L300,535" class="flow-arrow arr-chroma" marker-end="url(#arr-chroma)"/>
+  <!-- Arrows from Neo4j to agents -->
+  <path d="M910,480 L910,535" class="flow-arrow arr-neo4j" marker-end="url(#arr-neo4j)"/>
+
+  <!-- ChromaDB connects to agents 1,2,3 -->
+  <path d="M300,535 L182,535" class="flow-arrow arr-chroma" marker-end="url(#arr-chroma)" stroke-dasharray="5 3"/>
+  <path d="M300,535 L387,535" class="flow-arrow arr-chroma" marker-end="url(#arr-chroma)" stroke-dasharray="5 3"/>
+  <path d="M300,535 L597,535" class="flow-arrow arr-chroma" marker-end="url(#arr-chroma)" stroke-dasharray="5 3"/>
+
+  <!-- Neo4j connects to agents 3,4,5 -->
+  <path d="M910,535 L807,535" class="flow-arrow arr-neo4j" marker-end="url(#arr-neo4j)" stroke-dasharray="5 3"/>
+  <path d="M910,535 L1017,535" class="flow-arrow arr-neo4j" marker-end="url(#arr-neo4j)" stroke-dasharray="5 3"/>
+
+  <!-- Agent 1: RAG Query Agent x=87 -->
+  <rect x="87"  y="535" width="190" height="82" rx="8" class="box-agent glow-blue"/>
+  <text x="182" y="560" text-anchor="middle" font-size="11" font-weight="700" class="t-agent">🔎 RAG Query</text>
+  <text x="182" y="577" text-anchor="middle" font-size="10" fill="#93c5fd">Agent</text>
+  <text x="182" y="597" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">semantic_search()</text>
+  <text x="182" y="610" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">rerank · cite</text>
+
+  <!-- Agent 2: RCA Agent x=292 -->
+  <rect x="292" y="535" width="190" height="82" rx="8" class="box-agent glow-blue"/>
+  <text x="387" y="560" text-anchor="middle" font-size="11" font-weight="700" class="t-agent">🧩 RCA Agent</text>
+  <text x="387" y="577" text-anchor="middle" font-size="10" fill="#93c5fd">Root Cause Analysis</text>
+  <text x="387" y="597" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">fishbone_tree()</text>
+  <text x="387" y="610" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">5-Why chain</text>
+
+  <!-- Agent 3: Compliance Agent x=497 -->
+  <rect x="497" y="535" width="205" height="82" rx="8" class="box-agent glow-blue"/>
+  <text x="599" y="560" text-anchor="middle" font-size="11" font-weight="700" class="t-agent">✅ Compliance</text>
+  <text x="599" y="577" text-anchor="middle" font-size="10" fill="#93c5fd">Agent</text>
+  <text x="599" y="597" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">check_oisd_clause()</text>
+  <text x="599" y="610" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">gap_analysis()</text>
+
+  <!-- Agent 4: CAR Generator x=717 -->
+  <rect x="717" y="535" width="190" height="82" rx="8" class="box-agent glow-blue"/>
+  <text x="812" y="560" text-anchor="middle" font-size="11" font-weight="700" class="t-agent">📝 CAR Generator</text>
+  <text x="812" y="577" text-anchor="middle" font-size="10" fill="#93c5fd">Corrective Actions</text>
+  <text x="812" y="597" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">generate_car()</text>
+  <text x="812" y="610" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">track_overdue()</text>
+
+  <!-- Agent 5: Graph Query Agent x=922 -->
+  <rect x="922" y="535" width="210" height="82" rx="8" class="box-agent glow-blue"/>
+  <text x="1027" y="560" text-anchor="middle" font-size="11" font-weight="700" class="t-agent">🕸️ Graph Query</text>
+  <text x="1027" y="577" text-anchor="middle" font-size="10" fill="#93c5fd">Agent</text>
+  <text x="1027" y="597" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">cypher_gen()</text>
+  <text x="1027" y="610" text-anchor="middle" font-size="8"  fill="#1d4ed8" font-family="'JetBrains Mono'">path_traverse()</text>
+
+  <!-- FastAPI label on side -->
+  <rect x="30" y="548" width="52" height="22" rx="4" fill="rgba(234,88,12,0.15)" stroke="rgba(234,88,12,0.4)" stroke-width="1"/>
+  <text x="56" y="563" text-anchor="middle" font-size="9" font-weight="700" fill="#fb923c">FastAPI</text>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER 5: LLM LAYER (y=680..750)
+  ══════════════════════════════════════════════════ -->
+  <!-- Arrows from all agents down to LLM -->
+  <path d="M182,617 L182,680" class="flow-arrow arr-llm" marker-end="url(#arr-llm)"/>
+  <path d="M387,617 L500,680" class="flow-arrow arr-llm" marker-end="url(#arr-llm)"/>
+  <path d="M599,617 L599,680" class="flow-arrow arr-llm" marker-end="url(#arr-llm)"/>
+  <path d="M812,617 L700,680" class="flow-arrow arr-llm" marker-end="url(#arr-llm)"/>
+  <path d="M1027,617 L1027,680" class="flow-arrow arr-llm" marker-end="url(#arr-llm)"/>
+
+  <!-- LLM box centered: x=310 w=580 -->
+  <rect x="310" y="680" width="580" height="82" rx="10" class="box-llm glow-green"/>
+  <!-- Groq sub-box -->
+  <rect x="325" y="695" width="190" height="52" rx="7" fill="rgba(22,163,74,0.12)" stroke="rgba(22,163,74,0.4)" stroke-width="1.5"/>
+  <text x="420" y="716" text-anchor="middle" font-size="11" font-weight="700" fill="#86efac">⚡ Groq API</text>
+  <text x="420" y="732" text-anchor="middle" font-size="9"  fill="#4ade80" font-family="'JetBrains Mono'">api.groq.com</text>
+  <text x="420" y="743" text-anchor="middle" font-size="8"  fill="#166534" font-family="'JetBrains Mono'">~200 tok/s inference</text>
+
+  <!-- Arrow Groq → LLaMA -->
+  <path d="M515,721 L560,721" class="flow-arrow arr-llm" marker-end="url(#arr-llm)"/>
+
+  <!-- LLaMA sub-box -->
+  <rect x="558" y="695" width="315" height="52" rx="7" fill="rgba(22,163,74,0.12)" stroke="rgba(22,163,74,0.4)" stroke-width="1.5"/>
+  <text x="715" y="716" text-anchor="middle" font-size="13" font-weight="800" fill="#4ade80">🦙 LLaMA-3.3-70B</text>
+  <text x="715" y="734" text-anchor="middle" font-size="9"  fill="#86efac" font-family="'JetBrains Mono'">temperature=0.1 · ctx=8192 · json_mode</text>
+  <text x="715" y="747" text-anchor="middle" font-size="8"  fill="#166534" font-family="'JetBrains Mono'">Meta · Instruction-tuned · Tool-calling</text>
+
+  <!-- LLM response arrows back to agents (dotted lighter) -->
+  <path d="M400,680 L182,617" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 5" fill="none" opacity="0.4" marker-end="url(#arr-llm)"/>
+  <path d="M500,680 L387,617" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 5" fill="none" opacity="0.4" marker-end="url(#arr-llm)"/>
+  <path d="M600,680 L599,617" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 5" fill="none" opacity="0.4" marker-end="url(#arr-llm)"/>
+  <path d="M700,680 L812,617" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 5" fill="none" opacity="0.4" marker-end="url(#arr-llm)"/>
+  <path d="M800,680 L1027,617" stroke="#22c55e" stroke-width="1" stroke-dasharray="3 5" fill="none" opacity="0.4" marker-end="url(#arr-llm)"/>
+
+  <!-- ══════════════════════════════════════════════════
+       LAYER 6: FRONTEND (y=815..965)
+  ══════════════════════════════════════════════════ -->
+  <!-- Arrows from LLM/agents to frontend -->
+  <path d="M182,617 L340,815" stroke="#14b8a6" stroke-width="1.2" stroke-dasharray="5 3" fill="none" opacity="0.5" marker-end="url(#arr-front)"/>
+  <path d="M599,762 L599,815" class="flow-arrow arr-front" marker-end="url(#arr-front)"/>
+  <path d="M1027,617 L860,815" stroke="#14b8a6" stroke-width="1.2" stroke-dasharray="5 3" fill="none" opacity="0.5" marker-end="url(#arr-front)"/>
+
+  <!-- Frontend main box -->
+  <rect x="60" y="815" width="1080" height="170" rx="12" class="box-front glow-teal"/>
+
+  <!-- Stack label -->
+  <text x="600" y="843" text-anchor="middle" font-size="13" font-weight="800" class="t-front">⚛️ React + Tailwind CSS + D3.js</text>
+  <text x="600" y="861" text-anchor="middle" font-size="10" fill="#5eead4">Frontend Application — Vite · TypeScript · Axios · React Router v6</text>
+
+  <!-- 5 page boxes inside: w=190 gap=12, total=5*190+4*12=950+48=998, start=(1080-998)/2+60=101 -->
+  <!-- Dashboard x=101 -->
+  <rect x="101" y="874" width="190" height="90" rx="8" fill="rgba(13,148,136,0.1)" stroke="rgba(13,148,136,0.3)" stroke-width="1.5"/>
+  <text x="196" y="897" text-anchor="middle" font-size="18">📊</text>
+  <text x="196" y="916" text-anchor="middle" font-size="11" font-weight="700" class="t-front">Dashboard</text>
+  <text x="196" y="932" text-anchor="middle" font-size="9"  fill="#64748b">KPIs · Alerts</text>
+  <text x="196" y="947" text-anchor="middle" font-size="9"  fill="#64748b">Equipment Status</text>
+  <text x="196" y="960" text-anchor="middle" font-size="8"  fill="#0f766e" font-family="'JetBrains Mono'">/dashboard</text>
+
+  <!-- RAG Query x=305 -->
+  <rect x="305" y="874" width="190" height="90" rx="8" fill="rgba(13,148,136,0.1)" stroke="rgba(13,148,136,0.3)" stroke-width="1.5"/>
+  <text x="400" y="897" text-anchor="middle" font-size="18">🔎</text>
+  <text x="400" y="916" text-anchor="middle" font-size="11" font-weight="700" class="t-front">RAG Query</text>
+  <text x="400" y="932" text-anchor="middle" font-size="9"  fill="#64748b">Semantic Search</text>
+  <text x="400" y="947" text-anchor="middle" font-size="9"  fill="#64748b">Source Highlighting</text>
+  <text x="400" y="960" text-anchor="middle" font-size="8"  fill="#0f766e" font-family="'JetBrains Mono'">/query</text>
+
+  <!-- RCA Analyze x=509 -->
+  <rect x="509" y="874" width="190" height="90" rx="8" fill="rgba(13,148,136,0.1)" stroke="rgba(13,148,136,0.3)" stroke-width="1.5"/>
+  <text x="604" y="897" text-anchor="middle" font-size="18">🧩</text>
+  <text x="604" y="916" text-anchor="middle" font-size="11" font-weight="700" class="t-front">RCA Analyze</text>
+  <text x="604" y="932" text-anchor="middle" font-size="9"  fill="#64748b">Fishbone · 5-Why</text>
+  <text x="604" y="947" text-anchor="middle" font-size="9"  fill="#64748b">D3 Visualization</text>
+  <text x="604" y="960" text-anchor="middle" font-size="8"  fill="#0f766e" font-family="'JetBrains Mono'">/rca</text>
+
+  <!-- Overdue Tasks x=713 -->
+  <rect x="713" y="874" width="190" height="90" rx="8" fill="rgba(13,148,136,0.1)" stroke="rgba(13,148,136,0.3)" stroke-width="1.5"/>
+  <text x="808" y="897" text-anchor="middle" font-size="18">📋</text>
+  <text x="808" y="916" text-anchor="middle" font-size="11" font-weight="700" class="t-front">Overdue Tasks</text>
+  <text x="808" y="932" text-anchor="middle" font-size="9"  fill="#64748b">CAR Tracking</text>
+  <text x="808" y="947" text-anchor="middle" font-size="9"  fill="#64748b">Priority Queue</text>
+  <text x="808" y="960" text-anchor="middle" font-size="8"  fill="#0f766e" font-family="'JetBrains Mono'">/tasks</text>
+
+  <!-- Knowledge Graph x=917 -->
+  <rect x="917" y="874" width="207" height="90" rx="8" fill="rgba(13,148,136,0.1)" stroke="rgba(13,148,136,0.3)" stroke-width="1.5"/>
+  <text x="1020" y="897" text-anchor="middle" font-size="18">🕸️</text>
+  <text x="1020" y="916" text-anchor="middle" font-size="11" font-weight="700" class="t-front">Knowledge Graph</text>
+  <text x="1020" y="932" text-anchor="middle" font-size="9"  fill="#64748b">D3 Force Graph</text>
+  <text x="1020" y="947" text-anchor="middle" font-size="9"  fill="#64748b">Interactive Neo4j</text>
+  <text x="1020" y="960" text-anchor="middle" font-size="8"  fill="#0f766e" font-family="'JetBrains Mono'">/graph</text>
+
+  <!-- ══════════════════════════════════════════════════
+       DATA FLOW arrows from Data Sources → Pipeline
+  ══════════════════════════════════════════════════ -->
+  <!-- All 7 data boxes funnel into pdfplumber / pipeline -->
+  <path d="M129,124 L155,183" class="flow-arrow arr-data" marker-end="url(#arr-data)"/>
+  <path d="M281,124 L200,183" class="flow-arrow arr-data" marker-end="url(#arr-data)"/>
+  <path d="M433,124 L260,183" class="flow-arrow arr-data" marker-end="url(#arr-data)"/>
+  <path d="M585,124 L400,183" class="flow-arrow arr-data" marker-end="url(#arr-data)"/>
+  <path d="M737,124 L440,183" class="flow-arrow arr-data" marker-end="url(#arr-data)"/>
+  <path d="M889,124 L200,183" stroke="#64748b" stroke-width="1" fill="none" stroke-dasharray="3 6" opacity="0.4" marker-end="url(#arr-data)"/>
+  <!-- Equipment master → Neo4j directly -->
+  <path d="M1055,124 L910,340" class="flow-arrow arr-neo4j" marker-end="url(#arr-neo4j)" stroke-dasharray="4 4"/>
+
+  <!-- ══════════════════════════════════════════════════
+       LEGEND
+  ══════════════════════════════════════════════════ -->
+  <rect x="1148" y="30" width="2" height="950" fill="rgba(255,255,255,0.04)" rx="1"/>
+
+  <!-- Horizontal divider under LLM -->
+  <line x1="40" y1="770" x2="1160" y2="770" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="6 4"/>
+
+</svg>
+</div>
+
+<!-- Legend panel below SVG -->
+<div style="margin-top:24px; max-width:1280px; width:100%; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;">
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(71,85,105,0.15);border:1px solid rgba(71,85,105,0.3);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <span style="width:12px;height:12px;background:#475569;border-radius:2px;display:inline-block"></span>
+    <span style="color:#94a3b8;">Data Sources</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(234,88,12,0.1);border:1px solid rgba(234,88,12,0.3);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <span style="width:12px;height:12px;background:#ea580c;border-radius:2px;display:inline-block"></span>
+    <span style="color:#fb923c;">Ingestion Pipeline</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.3);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <span style="width:12px;height:12px;background:#06b6d4;border-radius:2px;display:inline-block"></span>
+    <span style="color:#22d3ee;">ChromaDB Vector Store</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(147,51,234,0.1);border:1px solid rgba(147,51,234,0.3);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <span style="width:12px;height:12px;background:#9333ea;border-radius:2px;display:inline-block"></span>
+    <span style="color:#c084fc;">Neo4j Knowledge Graph</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.3);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <span style="width:12px;height:12px;background:#2563eb;border-radius:2px;display:inline-block"></span>
+    <span style="color:#60a5fa;">FastAPI Agents</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <span style="width:12px;height:12px;background:#16a34a;border-radius:2px;display:inline-block"></span>
+    <span style="color:#4ade80;">Groq / LLaMA-3.3-70B</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(13,148,136,0.1);border:1px solid rgba(13,148,136,0.3);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <span style="width:12px;height:12px;background:#0d9488;border-radius:2px;display:inline-block"></span>
+    <span style="color:#2dd4bf;">React Frontend</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:6px;padding:6px 12px;font-size:11px;">
+    <svg width="20" height="10"><line x1="0" y1="5" x2="20" y2="5" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 3"/><polygon points="16,2 20,5 16,8" fill="#64748b"/></svg>
+    <span style="color:#64748b;">Animated Data Flow</span>
+  </div>
+</div>
+
+<p style="margin-top:20px;font-size:11px;color:#334155;text-align:center;letter-spacing:0.04em;">
+  IndustrialMind · Bharat Petrochemicals Ltd., Vadodara Unit-2 · ET AI Hackathon 2026
+</p>
+
+</body>
+</html>

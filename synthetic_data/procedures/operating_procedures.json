@@ -1,0 +1,72 @@
+[
+  {
+    "doc_no": "OP-CDU-001",
+    "title": "Crude Distillation Unit - Normal Startup Procedure",
+    "revision": "Rev 5",
+    "applicable_equipment": ["P-101A", "P-101B", "E-201", "V-301"],
+    "oisd_reference": "OISD-118",
+    "steps": [
+      "Verify all isolation valves are in correct position per P&ID",
+      "Commission cooling water to E-201 and confirm flow",
+      "Start P-101B on minimum flow recycle",
+      "Gradually increase crude charge to 60% design rate",
+      "Monitor V-301 bottom temperature - target 340°C before commencing product draws"
+    ]
+  },
+  {
+    "doc_no": "OP-NHT-001",
+    "title": "Naphtha Hydrotreater - Compressor Start Procedure",
+    "revision": "Rev 3",
+    "applicable_equipment": ["C-401", "FV-501"],
+    "oisd_reference": "OISD-118",
+    "steps": [
+      "Confirm dry gas seal supply pressure > 6 bar g",
+      "Open antisurge valve FV-501 fully before start",
+      "Engage coupling and bring to minimum speed",
+      "Monitor suction/discharge pressures and vibration",
+      "Gradually close antisurge valve once stable operating point achieved"
+    ]
+  },
+  {
+    "doc_no": "OP-TF-003",
+    "title": "Tank Farm - Naphtha Tank Drain Operation",
+    "revision": "Rev 2",
+    "applicable_equipment": ["T-601"],
+    "oisd_reference": "OISD-117",
+    "steps": [
+      "Obtain PTW and gas-test bund area",
+      "Confirm drain pit pump is operational",
+      "Open vent valve before drain valve",
+      "Crack-open manual drain valve and confirm flow to drain pit",
+      "Monitor for spillage; close valve immediately if bund level rises"
+    ]
+  },
+  {
+    "doc_no": "OP-FLR-001",
+    "title": "Flare System - Pilot Reignition Procedure",
+    "revision": "Rev 4",
+    "applicable_equipment": ["FI-801"],
+    "oisd_reference": "OISD-118",
+    "steps": [
+      "Confirm purge gas flow to flare header > 5 Nm3/hr",
+      "Isolate electrical supply to ignition transformer - check",
+      "Inspect pilot tip for blockage or mechanical damage",
+      "Restore ignition supply and activate electronic ignitor",
+      "Confirm pilot flame via thermocouple reading > 500°C"
+    ]
+  },
+  {
+    "doc_no": "OP-VBU-002",
+    "title": "PSV Bypass and Online Maintenance Procedure",
+    "revision": "Rev 1",
+    "applicable_equipment": ["PSV-701"],
+    "oisd_reference": "OISD-116",
+    "steps": [
+      "Obtain SIL bypass permit and approval from Plant Manager",
+      "Install calibrated bypass valve in parallel to PSV",
+      "Isolate PSV inlet block valve - verify zero energy state",
+      "Remove PSV and transport to workshop for bench testing",
+      "Reinstall certified PSV and restore line-up; remove bypass"
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+wo_number,equipment_tag,failure_mode,raised_date,cost_inr,status,priority,raised_by_id,assigned_to_id,oisd_reference
+WO-2024-001,P-101A,Mechanical seal leak,2024-01-08,45000,closed,high,EMP-003,EMP-007,OISD-118
+WO-2024-002,E-201,Tube fouling - high dP,2024-01-15,120000,closed,medium,EMP-005,EMP-009,OISD-116
+WO-2024-003,C-401,Valve plate failure,2024-02-03,380000,closed,critical,EMP-003,EMP-012,OISD-118
+WO-2024-004,P-101B,Bearing overheating,2024-02-18,32000,closed,high,EMP-006,EMP-007,OISD-118
+WO-2024-005,FV-501,Actuator malfunction,2024-03-05,67000,closed,high,EMP-004,EMP-010,OISD-116
+WO-2024-006,T-601,Roof drain blockage,2024-03-22,15000,closed,low,EMP-002,EMP-008,OISD-117
+WO-2024-007,PSV-701,Chatter - set pressure drift,2024-04-10,95000,closed,critical,EMP-003,EMP-011,OISD-116
+WO-2024-008,P-101A,Impeller wear,2024-04-28,210000,closed,high,EMP-005,EMP-007,OISD-118
+WO-2024-009,MOV-901,Limit switch failure,2024-05-14,28000,closed,medium,EMP-006,EMP-010,OISD-116
+WO-2024-010,FI-801,Pilot flame extinguished,2024-05-29,55000,in_progress,critical,EMP-003,EMP-012,OISD-118
+WO-2024-011,K-1001,Surge - antisurge valve trip,2024-06-11,175000,closed,high,EMP-004,EMP-009,OISD-118
+WO-2024-012,HE-1101,Fin tube corrosion,2024-06-25,88000,open,medium,EMP-002,EMP-008,OISD-116
+WO-2024-013,V-301,Tray damage - Level 12,2024-07-08,950000,open,critical,EMP-003,EMP-011,OISD-118
+WO-2024-014,E-201,Shell-side corrosion,2024-07-19,340000,open,high,EMP-005,EMP-009,OISD-116
+WO-2024-015,C-401,Piston rod packing leak,2024-08-02,125000,open,high,EMP-006,EMP-012,OISD-118

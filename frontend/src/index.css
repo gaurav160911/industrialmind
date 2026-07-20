@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+/* ─────────────────────────────────────────────────────────────────────────
+   NOTE: Tailwind is intentionally NOT imported here.
+   All styling is done via JS inline styles + ThemeContext, so Tailwind's
+   preflight reset would only conflict with our dark/light theme system.
+   ───────────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── CSS custom properties — defaults match DARK theme ──────────────────── */
+:root {
+  --bg:      #0a0e14;
+  --surface: #11151d;
+  --border:  #1f2530;
+  --text:    #e4e7ec;
+  --muted:   #6b7280;
+  --cyan:    #22d3ee;
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg:      #f0f4f8;
+  --surface: #ffffff;
+  --border:  #d1d9e6;
+  --text:    #1a202c;
+  --muted:   #64748b;
+  --cyan:    #0891b2;
+  color-scheme: light;
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
+html, body, #root {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Sans', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Prevent any element from defaulting to white — inherit from parent */
+div, aside, nav, main, section, header, footer, article {
+  background-color: transparent;
+}
+
+/* Form elements */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+}
+input, select, textarea {
+  font-family: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* ── Light mode select options ──────────────────────────────────────────── */
+[data-theme="light"] select option {
+  background: #ffffff;
+  color: #1a202c;
+}
+
+/* ── Theme toggle pulse ring ────────────────────────────────────────────── */
+.theme-toggle-ring { transition: box-shadow 0.2s; }
+.theme-toggle-ring:hover { box-shadow: 0 0 0 3px rgba(34,211,238,0.2); }
+[data-theme="light"] .theme-toggle-ring:hover { box-shadow: 0 0 0 3px rgba(8,145,178,0.2); }
+
+/* ── Spin animation (used by Loader2 icons) ─────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

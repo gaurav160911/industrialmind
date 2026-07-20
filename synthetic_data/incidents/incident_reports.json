@@ -1,0 +1,62 @@
+[
+  {
+    "report_no": "INC-2024-001",
+    "incident_type": "Near Miss",
+    "severity": "medium",
+    "date": "2024-02-12",
+    "location": "CDU - Pump Bay",
+    "description": "Operator noticed hydrocarbon vapor near P-101A gland during rounds. Area evacuated. Seal replaced under WO-2024-001.",
+    "equipment_involved": ["P-101A"],
+    "investigated_by": ["EMP-001", "EMP-003"],
+    "root_cause": "Mechanical seal degradation due to off-spec process fluid pH",
+    "corrective_actions": "Install pH monitor on suction; upgrade to Plan 54 seal flush"
+  },
+  {
+    "report_no": "INC-2024-002",
+    "incident_type": "Equipment Failure",
+    "severity": "high",
+    "date": "2024-02-05",
+    "location": "NHT - Compressor Bay",
+    "description": "C-401 tripped on high vibration. Unplanned shutdown of NHT unit for 6 hours. Production loss ~120 MT naphtha.",
+    "equipment_involved": ["C-401", "FV-501"],
+    "investigated_by": ["EMP-001", "EMP-004", "EMP-012"],
+    "root_cause": "Valve plate fatigue failure - missed during last PM",
+    "corrective_actions": "Revise PM interval from 18 months to 12 months; add online vibration monitoring"
+  },
+  {
+    "report_no": "INC-2024-003",
+    "incident_type": "Fire",
+    "severity": "critical",
+    "date": "2024-04-15",
+    "location": "Flare Area",
+    "description": "Small fire at FI-801 base due to liquid carryover in flare header during high-load operation. Extinguished by field operator using portable CO2.",
+    "equipment_involved": ["FI-801", "V-301"],
+    "investigated_by": ["EMP-001", "EMP-002", "EMP-005"],
+    "root_cause": "Flare KO drum high level not alarmed - transmitter failed",
+    "corrective_actions": "Replace level transmitter; add independent high-high level shutdown; revise HAZOP"
+  },
+  {
+    "report_no": "INC-2024-004",
+    "incident_type": "Near Miss",
+    "severity": "low",
+    "date": "2024-05-30",
+    "location": "Tank Farm - T-601",
+    "description": "Spill of ~50 litres naphtha during manual drain valve operation due to blocked drain line. Contained within bund.",
+    "equipment_involved": ["T-601"],
+    "investigated_by": ["EMP-002", "EMP-006"],
+    "root_cause": "Procedure not followed - drain valve opened before confirming downstream clear",
+    "corrective_actions": "Toolbox talk refresher; revise SOP OP-TF-003 to add pre-check step"
+  },
+  {
+    "report_no": "INC-2024-005",
+    "incident_type": "Overpressure",
+    "severity": "critical",
+    "date": "2024-04-12",
+    "location": "VBU - HP Separator",
+    "description": "PSV-701 lifted at 5% below set pressure during process upset. Confirmed set-point drift on bench test.",
+    "equipment_involved": ["PSV-701", "V-301"],
+    "investigated_by": ["EMP-001", "EMP-003", "EMP-011"],
+    "root_cause": "PSV not re-certified after last turnaround as per OISD-116 schedule",
+    "corrective_actions": "Immediate bench certification; update compliance tracker; assign ownership to Instrument dept"
+  }
+]
