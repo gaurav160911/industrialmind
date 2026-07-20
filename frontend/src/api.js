@@ -1,6 +1,12 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: '/api' })
+// In development: Vite proxies /api → localhost:8001
+// In production:  VITE_API_URL points to the Railway backend URL
+const baseURL = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}`
+  : '/api'
+
+const api = axios.create({ baseURL })
 
 export const queryRAG      = (question, top_k = 5)  => api.post('/query',  { question, top_k })
 export const analyzeRCA    = (equipment_tag)          => api.post('/rca/analyze', { equipment_tag })

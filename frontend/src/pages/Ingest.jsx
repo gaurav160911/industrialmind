@@ -134,7 +134,8 @@ export default function Ingest() {
         fd.append('document_type', item.docType)
         fd.append('facility', FACILITY)
 
-        const res = await fetch('http://localhost:8080/ingest/upload', { method: 'POST', body: fd })
+        const apiBase = import.meta.env.VITE_API_URL || '/api'
+        const res = await fetch(`${apiBase}/ingest/upload`, { method: 'POST', body: fd })
 
         if (!res.ok) {
           const txt = await res.text().catch(() => `HTTP ${res.status}`)
