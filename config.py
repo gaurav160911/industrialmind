@@ -22,7 +22,8 @@ class Settings(BaseSettings):
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = "industrialmind"
 
-    CHROMA_PERSIST_PATH: str = "/tmp/chroma"  # In-process persistent storage
+    CHROMA_HOST: str = "chroma.railway.internal"
+    CHROMA_PORT: int = 8000
     CHROMA_COLLECTION: str = "industrial_docs"
 
     UPLOAD_DIR: str = "/tmp/uploads"

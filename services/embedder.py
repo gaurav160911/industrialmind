@@ -25,13 +25,12 @@ _chroma_client: chromadb.HttpClient | None = None
 _embeddings: HuggingFaceEmbeddings | None = None
 
 
-def _get_chroma_client() -> chromadb.PersistentClient:
+def _get_chroma_client() -> chromadb.HttpClient:
     global _chroma_client
     if _chroma_client is None:
         s = get_settings()
-        # Use in-process PersistentClient — no separate service needed
-        _chroma_client = chromadb.PersistentClient(path=s.CHROMA_PERSIST_PATH)
-        logger.info("ChromaDB in-process client ready at %s", s.CHROMA_PERSIST_PATH)
+        _chroma_client = chromadb.HttpClient(host=s.CHROMA_HOST, port=s.CHROMA_PORT)
+        logger.info("Connected to ChromaDB at %s:%s", s.CHROMA_HOST, s.CHROMA_PORT)
     return _chroma_client
 
 
