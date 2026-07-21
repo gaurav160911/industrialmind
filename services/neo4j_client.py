@@ -58,46 +58,30 @@ def run_cypher(
 ) -> list[dict[str, Any]]:
     """
     Execute a Cypher query and return the result records as a list of dicts.
-
-    Parameters
-    ----------
-    query : str
-        A valid Cypher statement.
-    parameters : dict, optional
-        Query parameters (``$param`` style).
-    database : str, optional
-        Target database name. ``None`` uses the driver default.
-
-    Returns
-    -------
-    list[dict]
-        Each dict maps return-column names to their values.
     """
-    from neo4j.exceptions import SessionExpired
+    driver = _get_driver()
 
-driver = _get_driver()
+    try:
+        with driver.session(database=database) as session:
+            result: Result = session.run(query, parameters or {})
+            records = [record.data() for record in result]
+            summary = result.consume()
 
-try:
-    with driver.session(database=database) as session:
-        result: Result = session.run(query, parameters or {})
-        records = [record.data() for record in result]
-        summary = result.consume()
+    except SessionExpired:
+        logger.warning("Neo4j session expired. Retrying once...")
 
-except SessionExpired:
-    logger.warning("Neo4j session expired. Retrying once...")
+        with driver.session(database=database) as session:
+            result: Result = session.run(query, parameters or {})
+            records = [record.data() for record in result]
+            summary = result.consume()
 
-    with driver.session(database=database) as session:
-        result: Result = session.run(query, parameters or {})
-        records = [record.data() for record in result]
-        summary = result.consume()
     logger.debug(
         "Cypher executed in %d ms — %d record(s)",
         summary.result_available_after,
         len(records),
     )
+
     return records
-
-
 def run_cypher_write(
     query: str,
     parameters: dict[str, Any] | None = None,
