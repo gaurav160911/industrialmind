@@ -69,11 +69,13 @@ def run_cypher(
 
     except SessionExpired:
         logger.warning("Neo4j session expired. Retrying once...")
+        logger.info("Running Neo4j query...")
 
         with driver.session(database=database) as session:
             result: Result = session.run(query, parameters or {})
             records = [record.data() for record in result]
             summary = result.consume()
+        logger.info("Neo4j query completed successfully.")
 
     logger.debug(
         "Cypher executed in %d ms — %d record(s)",
