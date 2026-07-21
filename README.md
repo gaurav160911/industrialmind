@@ -1,4 +1,4 @@
-# OpusIQ — Know Your Plant. Before It Fails.
+# IndustrialMind — Know Your Plant. Before It Fails.
 
 <div align="center">
 
@@ -29,7 +29,7 @@ Then there is the **knowledge cliff**: 25% of India's experienced industrial eng
 
 ---
 
-## What OpusIQ Does
+## What IndustrialMind Does
 
 | Module | Description |
 |--------|-------------|
