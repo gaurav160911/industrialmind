@@ -199,7 +199,6 @@ curl -X POST http://localhost:8080/query \
 
 ---
 
-<<<<<<< HEAD
 ## ☁️ Cloud Deployment (Production)
 
 Your project is configured for cloud deployment across three services:
@@ -216,10 +215,7 @@ Your project is configured for cloud deployment across three services:
 
 ---
 
-## 📁 Project Structure
-=======
 ## Knowledge Graph Schema
->>>>>>> 2c85390ab4c3bbad5848973c6f7db13c4713319d
 
 ```cypher
 // Equipment connected to failures
