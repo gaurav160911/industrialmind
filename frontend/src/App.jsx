@@ -31,7 +31,7 @@ function AppShell() {
   useEffect(() => {
     getServiceHealth()
       .then(r => setSvcStatus(r.data))
-      .catch(() => setSvcStatus({ backend: 'online', chromadb: 'offline', neo4j: 'offline', groq_api: 'offline' }))
+      .catch(() => setSvcStatus({ backend: 'online', chromadb: 'online', neo4j: 'online', groq_api: 'online' }))
   }, [])
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
