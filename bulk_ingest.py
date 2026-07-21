@@ -6,7 +6,7 @@ from pathlib import Path
 # Force UTF-8 output so Unicode arrows work on Windows cp1252 consoles
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
-BASE_URL = "http://localhost:8080"
+BASE_URL = "https://industrialmind-production.up.railway.app"
 SYNTHETIC_DIR = Path("synthetic_data")
 
 FILES = [

@@ -1,0 +1,7 @@
+frontend/
+venv311/
+.git/
+__pycache__/
+.env
+*.pyc
+.pytest_cache/

@@ -3,19 +3,21 @@ IndustrialMind — RAG query endpoint.
 
 POST /query
   • Accepts a natural-language question.
-  • Retrieves the top-k relevant chunks from ChromaDB.
-  • Sends them as context to Claude claude-sonnet-4-6 and returns the answer.
+  • When ?structured=true (default): returns rich JSON with timeline, status, etc.
+  • When ?structured=false: returns plain answer + source citations.
 """
 
 from __future__ import annotations
 
 import logging
+import time
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
+from typing import Any
 
 from services.embedder import query_similar
-from services.claude_client import rag_query
+from services.claude_client import rag_query, rag_query_structured
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/query", tags=["RAG Query"])
@@ -33,6 +35,7 @@ class SourceInfo(BaseModel):
     source: str | None
     chunk_index: int | None
     distance: float | None
+    content: str | None = None
 
 
 class QueryResponse(BaseModel):
@@ -41,17 +44,48 @@ class QueryResponse(BaseModel):
     model: str
 
 
+class TimelineEntry(BaseModel):
+    date: str
+    id: str
+    type: str
+    description: str
+    source: str
+    severity: str | None = None
+    status: str | None = None
+
+
+class StructuredQueryResponse(BaseModel):
+    structured: bool = True
+    model: str
+    overall_status: str
+    risk_level: str
+    total_incidents: int
+    total_work_orders: int
+    executive_summary: str
+    equipment_tag: str | None = None
+    timeline: list[TimelineEntry]
+    recommendations: list[str]
+    key_insights: list[str]
+    sources: list[SourceInfo]
+    response_time_ms: float | None = None
+
+
 # ── Endpoint ─────────────────────────────────────────────────────────────
 
 @router.post(
     "",
-    response_model=QueryResponse,
     summary="Ask a question with RAG",
 )
-async def ask_question(body: QueryRequest):
+async def ask_question(
+    body: QueryRequest,
+    structured: bool = Query(default=True, description="Return rich structured JSON response"),
+) -> Any:
     """
-    Retrieve relevant document chunks and generate an answer via Claude.
+    Retrieve relevant document chunks and generate an answer via the LLM.
+    Set structured=true (default) for the rich UI response with timeline & insights.
     """
+    t_start = time.monotonic()
+
     # 1. Retrieve context
     try:
         chunks = query_similar(body.question, n_results=body.top_k)
@@ -70,22 +104,25 @@ async def ask_question(body: QueryRequest):
 
     # 2. Generate answer
     try:
-        result = rag_query(
-            body.question,
-            chunks,
-            max_tokens=body.max_tokens,
-        )
+        if structured:
+            result = rag_query_structured(body.question, chunks, max_tokens=body.max_tokens)
+        else:
+            result = rag_query(body.question, chunks, max_tokens=body.max_tokens)
     except RuntimeError as exc:
-        # Typically missing API key
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail=str(exc),
         ) from exc
     except Exception as exc:
-        logger.exception("Claude generation failed")
+        logger.exception("LLM generation failed")
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"LLM generation error: {exc}",
         ) from exc
+
+    elapsed_ms = round((time.monotonic() - t_start) * 1000, 1)
+
+    if result.get("structured"):
+        result["response_time_ms"] = elapsed_ms
 
     return result

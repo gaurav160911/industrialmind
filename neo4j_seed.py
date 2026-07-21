@@ -14,14 +14,19 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
 from neo4j import GraphDatabase, Driver
 
-# ── Connection ────────────────────────────────────────────────────────────
-NEO4J_URI = "bolt://localhost:7687"
-NEO4J_AUTH = ("neo4j", "industrialmind")
+# ── Connection — reads from .env automatically ────────────────────────────
+load_dotenv(Path(__file__).parent / ".env")
+NEO4J_URI  = os.getenv("NEO4J_URI",      "neo4j+ssc://85a4fa41.databases.neo4j.io")
+NEO4J_USER = os.getenv("NEO4J_USER",     "85a4fa41")
+NEO4J_PASS = os.getenv("NEO4J_PASSWORD", "YUzHnehdU9c9k1jszsKpmn_WBdCVDgy6qWpA1NtikMc")
+NEO4J_AUTH = (NEO4J_USER, NEO4J_PASS)
 
 # ── Data paths ────────────────────────────────────────────────────────────
 DATA_ROOT = Path(__file__).parent / "synthetic_data"

@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import { Activity, Search, AlertTriangle, FileText, LayoutDashboard, Zap, GitFork, Upload, Sun, Moon } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { getServiceHealth } from './api'
 import Dashboard      from './pages/Dashboard'
 import RAGQuery       from './pages/RAGQuery'
 import RCAAnalysis    from './pages/RCAAnalysis'
@@ -22,6 +24,13 @@ const nav = [
 
 function AppShell() {
   const { theme: S, isDark, toggle } = useTheme()
+  const [svcStatus, setSvcStatus] = useState({ backend: 'checking', chromadb: 'checking', neo4j: 'checking', groq_api: 'checking' })
+
+  useEffect(() => {
+    getServiceHealth()
+      .then(r => setSvcStatus(r.data))
+      .catch(() => setSvcStatus({ backend: 'online', chromadb: 'offline', neo4j: 'offline', groq_api: 'offline' }))
+  }, [])
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', background: S.bg, color: S.text, transition: 'background 0.2s, color 0.2s' }}>
@@ -37,7 +46,7 @@ function AppShell() {
             </div>
             <div>
               <p style={{ margin: 0, fontSize: 12, fontWeight: 600, color: S.text, letterSpacing: '0.05em', lineHeight: 1.2 }}>INDUSTRIALMIND</p>
-              <p style={{ margin: 0, fontSize: 10, color: S.muted, fontFamily: S.mono, letterSpacing: '0.03em' }}>v0.1.0 · ONLINE</p>
+              <p style={{ margin: 0, fontSize: 10, color: S.muted, fontFamily: S.mono, letterSpacing: '0.03em' }}>v3.1.0 · <span style={{ color: '#10b981' }}>ONLINE</span></p>
             </div>
           </div>
         </div>
@@ -114,15 +123,31 @@ function AppShell() {
           </button>
         </div>
 
-        {/* Status footer */}
+        {/* LLM status */}
         <div style={{ padding: '10px 16px', borderTop: `1px solid ${S.border}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', border: `1px solid ${S.border}`, borderRadius: 2, background: S.surface }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981', display: 'inline-block', flexShrink: 0 }} />
-            <div>
-              <p style={{ margin: 0, fontSize: 9, color: '#10b981', fontFamily: S.mono, letterSpacing: '0.05em' }}>GROQ LLM · CONNECTED</p>
-              <p style={{ margin: 0, fontSize: 9, color: S.muted, fontFamily: S.mono }}>llama-3.3-70b-versatile</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '7px 10px', border: `1px solid ${S.border}`, borderRadius: 2, background: S.surface }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981', display: 'inline-block', flexShrink: 0, boxShadow: '0 0 6px #10b981' }} />
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: 0, fontSize: 9, color: '#10b981', fontFamily: S.mono, letterSpacing: '0.05em' }}>RAG LLM · CONNECTED</p>
+              <p style={{ margin: 0, fontSize: 9, color: S.muted, fontFamily: S.mono }}>Llama 3.3 70B · Groq</p>
             </div>
           </div>
+        </div>
+
+        {/* System Status */}
+        <div style={{ padding: '10px 16px 14px', borderTop: `1px solid ${S.border}` }}>
+          <p style={{ margin: '0 0 8px', fontSize: 9, color: S.muted, fontFamily: S.mono, letterSpacing: '0.12em' }}>SYSTEM STATUS</p>
+          {[['Backend', svcStatus.backend], ['ChromaDB', svcStatus.chromadb], ['Neo4j', svcStatus.neo4j], ['Groq API', svcStatus.groq_api]].map(([label, st]) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '3px 0' }}>
+              <span style={{ fontSize: 10, color: S.muted, fontFamily: S.mono }}>{label}</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: st === 'online' ? '#10b981' : st === 'checking' ? S.muted : '#ef4444', display: 'inline-block' }} />
+                <span style={{ fontSize: 9, fontFamily: S.mono, color: st === 'online' ? '#10b981' : st === 'checking' ? S.muted : '#ef4444', letterSpacing: '0.05em' }}>
+                  {st === 'checking' ? '…' : st === 'online' ? 'Online' : 'Offline'}
+                </span>
+              </span>
+            </div>
+          ))}
         </div>
       </aside>
 

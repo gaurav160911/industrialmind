@@ -92,3 +92,40 @@ async def root():
 @app.get("/health", tags=["Health"])
 async def health():
     return {"status": "ok"}
+
+
+@app.get("/health/services", tags=["Health"])
+async def health_services():
+    """Check connectivity of all dependent services for the sidebar status panel."""
+    import asyncio
+
+    results = {"backend": "online"}
+
+    # ChromaDB
+    try:
+        from services.embedder import _get_chroma_client
+        client = _get_chroma_client()
+        client.heartbeat()
+        results["chromadb"] = "online"
+    except Exception:
+        results["chromadb"] = "offline"
+
+    # Neo4j
+    try:
+        from services.neo4j_client import get_driver
+        driver = get_driver()
+        driver.verify_connectivity()
+        results["neo4j"] = "online"
+    except Exception:
+        results["neo4j"] = "offline"
+
+    # Groq API
+    try:
+        from services.claude_client import _get_client
+        _get_client()
+        results["groq_api"] = "online"
+    except Exception:
+        results["groq_api"] = "offline"
+
+    return results
+

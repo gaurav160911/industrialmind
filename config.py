@@ -15,6 +15,8 @@ class Settings(BaseSettings):
 
     # Groq (free tier) — get your key at https://console.groq.com
     GROQ_API_KEY: str = ""
+    # Backward-compatible alias used by the template env file.
+    ANTHROPIC_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"  # free & powerful
     CLAUDE_MAX_TOKENS: int = 1024  # Reduced for faster responses (was 4096)
 
@@ -22,12 +24,17 @@ class Settings(BaseSettings):
     NEO4J_USER: str = "neo4j"
     NEO4J_PASSWORD: str = "industrialmind"
 
+    CHROMA_URL: str = ""
     CHROMA_HOST: str = "chroma.railway.internal"
     CHROMA_PORT: int = 8000
     CHROMA_COLLECTION: str = "industrial_docs"
 
     UPLOAD_DIR: str = "/tmp/uploads"
     MAX_UPLOAD_SIZE_MB: int = 50
+
+    @property
+    def llm_api_key(self) -> str:
+        return self.GROQ_API_KEY or self.ANTHROPIC_API_KEY
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
 @lru_cache

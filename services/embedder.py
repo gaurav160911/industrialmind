@@ -8,6 +8,7 @@ import hashlib
 import json
 import csv
 import logging
+from urllib.parse import urlparse
 from pathlib import Path
 from typing import Any
 
@@ -29,8 +30,19 @@ def _get_chroma_client() -> chromadb.HttpClient:
     global _chroma_client
     if _chroma_client is None:
         s = get_settings()
-        _chroma_client = chromadb.HttpClient(host=s.CHROMA_HOST, port=s.CHROMA_PORT)
-        logger.info("Connected to ChromaDB at %s:%s", s.CHROMA_HOST, s.CHROMA_PORT)
+        if s.CHROMA_URL:
+            parsed = urlparse(s.CHROMA_URL)
+            if not parsed.hostname:
+                raise ValueError(f"Invalid CHROMA_URL: {s.CHROMA_URL}")
+            _chroma_client = chromadb.HttpClient(
+                host=parsed.hostname,
+                port=parsed.port or (443 if parsed.scheme == "https" else 80),
+                ssl=parsed.scheme == "https",
+            )
+            logger.info("Connected to ChromaDB via URL %s", s.CHROMA_URL)
+        else:
+            _chroma_client = chromadb.HttpClient(host=s.CHROMA_HOST, port=s.CHROMA_PORT)
+            logger.info("Connected to ChromaDB at %s:%s", s.CHROMA_HOST, s.CHROMA_PORT)
     return _chroma_client
 
 

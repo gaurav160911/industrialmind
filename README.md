@@ -115,6 +115,22 @@ python bulk_ingest.py
 
 ---
 
+## ☁️ Cloud Deployment (Production)
+
+Your project is configured for cloud deployment across three services:
+
+1. **Neo4j AuraDB**: Hosts the knowledge graph (Free tier available).
+2. **Railway**: Hosts the FastAPI backend and ChromaDB vector store as a Docker service.
+3. **Vercel**: Hosts the React (Vite) frontend.
+
+### Deployment Steps:
+1. Provision a free AuraDB instance at Neo4j and note the connection URI and password.
+2. Deploy the backend to Railway using the Railway CLI (`railway up`). Add `chromadb/chroma:latest` as a service.
+3. Update environment variables in Railway (`NEO4J_URI`, `NEO4J_PASSWORD`, `GROQ_API_KEY`). For Chroma, set either `CHROMA_URL` to the public Railway URL or `CHROMA_HOST`/`CHROMA_PORT` for an internal service connection.
+4. Deploy the `frontend/` directory to Vercel. Ensure you add `VITE_API_URL` to point to your Railway backend URL.
+
+---
+
 ## 📁 Project Structure
 
 ```
