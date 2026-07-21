@@ -11,6 +11,7 @@ import logging
 from typing import Any
 
 from neo4j import GraphDatabase, Driver, Result
+from neo4j.exceptions import SessionExpired
 
 from config import get_settings
 
@@ -25,9 +26,13 @@ def _get_driver() -> Driver:
     if _driver is None:
         s = get_settings()
         _driver = GraphDatabase.driver(
-            s.NEO4J_URI,
-            auth=(s.NEO4J_USER, s.NEO4J_PASSWORD),
-        )
+    s.NEO4J_URI,
+    auth=(s.NEO4J_USER, s.NEO4J_PASSWORD),
+    connection_timeout=30,
+    keep_alive=True,
+    max_connection_lifetime=60,
+    max_connection_pool_size=10,
+)
         # Verify connectivity eagerly so startup failures surface early
         _driver.verify_connectivity()
         logger.info("Connected to Neo4j at %s", s.NEO4J_URI)
@@ -53,36 +58,32 @@ def run_cypher(
 ) -> list[dict[str, Any]]:
     """
     Execute a Cypher query and return the result records as a list of dicts.
-
-    Parameters
-    ----------
-    query : str
-        A valid Cypher statement.
-    parameters : dict, optional
-        Query parameters (``$param`` style).
-    database : str, optional
-        Target database name. ``None`` uses the driver default.
-
-    Returns
-    -------
-    list[dict]
-        Each dict maps return-column names to their values.
     """
     driver = _get_driver()
 
-    with driver.session(database=database) as session:
-        result: Result = session.run(query, parameters or {})
-        records = [record.data() for record in result]
-        summary = result.consume()
+    try:
+        with driver.session(database=database) as session:
+            result: Result = session.run(query, parameters or {})
+            records = [record.data() for record in result]
+            summary = result.consume()
+
+    except SessionExpired:
+        logger.warning("Neo4j session expired. Retrying once...")
+        logger.info("Running Neo4j query...")
+
+        with driver.session(database=database) as session:
+            result: Result = session.run(query, parameters or {})
+            records = [record.data() for record in result]
+            summary = result.consume()
+        logger.info("Neo4j query completed successfully.")
 
     logger.debug(
         "Cypher executed in %d ms — %d record(s)",
         summary.result_available_after,
         len(records),
     )
+
     return records
-
-
 def run_cypher_write(
     query: str,
     parameters: dict[str, Any] | None = None,

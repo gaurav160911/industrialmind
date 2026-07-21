@@ -39,8 +39,19 @@ html, body, #root {
   background: var(--bg);
   color: var(--text);
   font-family: 'IBM Plex Sans', 'Inter', system-ui, sans-serif;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   transition: background 0.2s, color 0.2s;
+}
+
+@media (max-width: 1024px) {
+  html, body, #root {
+    font-size: 14px;
+  }
+}
+
+body {
+  line-height: 1.45;
 }
 
 /* Prevent any element from defaulting to white — inherit from parent */

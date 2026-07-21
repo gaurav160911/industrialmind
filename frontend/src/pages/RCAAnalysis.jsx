@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Activity, Loader2, AlertCircle, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { analyzeRCA } from '../api'
 import { useTheme } from '../ThemeContext'
+import { useSearchParams } from 'react-router-dom'
 
 function getErrorMessage(err, tag) {
   if (!err.response) return "Cannot reach backend. Check the FastAPI server is running on port 8080."
@@ -14,6 +15,7 @@ const SUGGESTIONS = ['P-101A', 'P-101B', 'E-201', 'V-301', 'T-601']
 
 export default function RCAAnalysis() {
   const { theme: S } = useTheme()
+  const [params] = useSearchParams()
   const [tag, setTag] = useState('')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -33,6 +35,14 @@ export default function RCAAnalysis() {
     catch (err) { setError(getErrorMessage(err, t.trim())) }
     finally { setLoading(false) }
   }
+
+  useEffect(() => {
+    const queryTag = params.get('tag')
+    if (queryTag) {
+      setTag(queryTag)
+      run(queryTag)
+    }
+  }, [])
 
   return (
     <div style={{ padding: 32, maxWidth: 860, margin: '0 auto' }}>
