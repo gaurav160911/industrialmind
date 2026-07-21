@@ -103,17 +103,23 @@ async def health_services():
 
     # ChromaDB
     try:
-        from services.embedder import _get_chroma_client
-        client = _get_chroma_client()
-        client.heartbeat()
-        results["chromadb"] = "online"
-    except Exception:
-        results["chromadb"] = "offline"
+    from config import get_settings
+    from services.embedder import _get_chroma_client
 
+    client = _get_chroma_client()
+    client.get_or_create_collection(
+        name=get_settings().CHROMA_COLLECTION
+    )
+
+    results["chromadb"] = "online"
+
+except Exception as e:
+    logger.exception(e)
+    results["chromadb"] = "offline"
     # Neo4j
     try:
         from services.neo4j_client import get_driver
-        driver = get_driver()
+        driver = _get_driver()
         driver.verify_connectivity()
         results["neo4j"] = "online"
     except Exception:
@@ -124,8 +130,8 @@ async def health_services():
         from services.claude_client import _get_client
         _get_client()
         results["groq_api"] = "online"
-    except Exception:
-        results["groq_api"] = "offline"
+    except Exception as e:
+         logger.exception(e)
 
     return results
 
