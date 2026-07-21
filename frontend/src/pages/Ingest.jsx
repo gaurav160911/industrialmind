@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import { Upload, FileText, X, CheckCircle, XCircle, Loader2, CloudUpload } from 'lucide-react'
 import { useTheme } from '../ThemeContext'
+import { useToast } from '../components/ToastContext'
 
 
 
@@ -78,10 +79,12 @@ function StatusPill({ status }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 export default function Ingest() {
   const { theme: S } = useTheme()
+  const { showToast } = useToast()
   const inputRef = useRef(null)
   const [dragging, setDragging] = useState(false)
   const [queue,    setQueue]    = useState([])   // { id, file, docType, status }
   const [running,  setRunning]  = useState(false)
+  const [step, setStep] = useState('Awaiting upload')
 
   // ── Drag / drop handlers ──────────────────────────────────────────────────
   const onDragOver  = useCallback(e => { e.preventDefault(); setDragging(true)  }, [])
@@ -122,6 +125,8 @@ export default function Ingest() {
     const pending = queue.filter(f => f.status?.state !== 'ok')
     if (!pending.length) return
     setRunning(true)
+    setStep('Uploading files')
+    let failed = 0
 
     for (const item of pending) {
       setQueue(prev => prev.map(f =>
@@ -148,7 +153,9 @@ export default function Ingest() {
         setQueue(prev => prev.map(f =>
           f.id === item.id ? { ...f, status: { state: 'ok', chunks } } : f
         ))
+        setStep('Embedding and indexing')
       } catch (err) {
+        failed += 1
         setQueue(prev => prev.map(f =>
           f.id === item.id ? { ...f, status: { state: 'error', error: err?.message || 'Upload failed' } } : f
         ))
@@ -156,7 +163,9 @@ export default function Ingest() {
     }
 
     setRunning(false)
-  }, [queue])
+    setStep('Completed')
+    showToast(failed ? 'Ingest completed with errors.' : 'Ingest completed successfully.', failed ? 'error' : 'success')
+  }, [queue, showToast])
 
   const clearDone = useCallback(() => setQueue(prev => prev.filter(f => f.status?.state !== 'ok')), [])
 
@@ -231,6 +240,11 @@ export default function Ingest() {
               ? 'No files queued'
               : `${queue.length} file${queue.length !== 1 ? 's' : ''} · ${doneCount} done · ${pendingCount} pending`}
           </p>
+          {running && (
+            <p style={{ margin: 0, fontSize: 11, color: S.cyan, fontFamily: S.mono, letterSpacing: '0.06em' }}>
+              {step.toUpperCase()}
+            </p>
+          )}
           {doneCount > 0 && (
             <button
               onClick={clearDone}
